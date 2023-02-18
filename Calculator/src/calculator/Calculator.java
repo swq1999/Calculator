@@ -3,11 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package calculator;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.text.DecimalFormat;
 import javax.swing.*;
-import java.awt.event.*;
 
 /**
  *
@@ -16,24 +18,30 @@ import java.awt.event.*;
 public class Calculator implements ActionListener {
     // Defining variables
     JFrame frame;
+    JPanel panel;
     JTextField textfield;
+    JLabel message;
+    
     JButton[] numButtons = new JButton[10];
     JButton[] funcButtons = new JButton[10];
+    
     JButton addButton, subButton, mulButton, divButton, percButton;
     JButton delButton, equButton, clrButton, decButton, negButton;
-    JPanel panel;
+    
     Font myFont = new Font("", Font.PLAIN, 40);
     Font myFontBtns = new Font("", Font.PLAIN, 30);
     
     double num1 = 0, num2 = 0, result = 0;
     char op;
     
+    // Constructor
     Calculator() {
         // Setting frame values
         frame = new JFrame("Calculator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(450,600);
         frame.setLayout(null);
+        frame.setResizable(false);
         
         // Setting textfield values
         textfield = new JTextField();
@@ -112,20 +120,31 @@ public class Calculator implements ActionListener {
         panel.add(funcButtons[4]);
         panel.add(funcButtons[5]);
         
+        // Adding message
+        message = new JLabel("");
+        message.setForeground(Color.RED);
+        message.setBounds(50, 7, 400, 20);
+        frame.getContentPane().add(message);
         
         // Adding to frame
         frame.add(panel);
         frame.add(textfield);
+        frame.add(message);
         frame.setVisible(true);
+        
+        
     }
     
     public static void main(String[] args) {
         
         Calculator calc = new Calculator();
-    }
+    }  
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        
+        // Rounding to 8 decimals MAX
+        DecimalFormat df = new DecimalFormat("#.########");
         
         for(int i=0; i<10; i++)
         {
@@ -144,30 +163,32 @@ public class Calculator implements ActionListener {
         if(e.getSource() == clrButton)
         {
             textfield.setText("");
+            num1 = 0;
+            num2 = 0;
         }
         // Add button
-        if(e.getSource() == addButton)
+        if(e.getSource() == addButton && !textfield.getText().isEmpty())
         {
             num1 = Double.parseDouble(textfield.getText());
             op = '+';
             textfield.setText("");
         }
         // Subtract button
-        if(e.getSource() == subButton)
+        if(e.getSource() == subButton && !textfield.getText().isEmpty())
         {
             num1 = Double.parseDouble(textfield.getText());
             op = '-';
             textfield.setText("");
         }
         // Multiply button
-        if(e.getSource() == mulButton)
+        if(e.getSource() == mulButton && !textfield.getText().isEmpty())
         {
             num1 = Double.parseDouble(textfield.getText());
             op = 'x';
             textfield.setText("");
         }
         // Divide button
-        if(e.getSource() == divButton)
+        if(e.getSource() == divButton && !textfield.getText().isEmpty())
         {
             num1 = Double.parseDouble(textfield.getText());
             op = '/';
@@ -176,45 +197,101 @@ public class Calculator implements ActionListener {
         // Equals button
         if(e.getSource() == equButton)
         {
-            num2 = Double.parseDouble(textfield.getText());
-            
-            switch(op) {
-                case '+':
-                    result = num1 + num2;
-                    break;
-                case '-':
-                    result = num1 - num2;
-                    break;
-                case 'x':
-                    result = num1 * num2;
-                    break;
-                case '/':
-                    result = num1 / num2;
-                    break;
+            if (textfield.getText().isEmpty() || textfield.getText().contains(".")){
+                
             }
-            
-            textfield.setText(String.valueOf(result));
-            num1 = result;
-        }
+            else {
+                num2 = Double.parseDouble(textfield.getText());
+
+                switch(op) {
+                    case '+':
+                        result = Double.parseDouble(df.format(num1 + num2));
+                        break;
+                    case '-':
+                        result = Double.parseDouble(df.format(num1 - num2));
+                        break;
+                    case 'x':
+                        result = Double.parseDouble(df.format(num1 * num2));
+                        break;
+                    case '/':
+                        // If divided by Zero
+                        if(num2 == 0) {
+                            //JOptionPane.showMessageDialog(null, "Error: Cannot divide by Zero");
+                            setMessageWithDelay("Cannot divide by Zero",message);
+                            setMessageWithDelay("ERROR",textfield);
+                            return;
+                        } else {
+                            result = Double.parseDouble(df.format(num1 / num2));
+                            break;
+                        }
+                    default:
+                        setMessageWithDelay("Please enter a second value",message);
+                        return;
+                }
+                
+                textfield.setText(String.valueOf(result));
+                num1 = result;
+            }
+        }      
+        
         // Delete Button
-        if(e.getSource() == delButton)
+        if(e.getSource() == delButton && !textfield.getText().isEmpty())
         {
-            StringBuffer sb = new StringBuffer(textfield.getText());
+            StringBuilder sb = new StringBuilder(textfield.getText());
             sb.deleteCharAt(sb.length()-1);
             textfield.setText(sb.toString());
         }
         // Negative Button
-        if(e.getSource() == negButton)
+        if(e.getSource() == negButton && !textfield.getText().isEmpty())
         {
             double num = Double.parseDouble(textfield.getText())*-1;
             textfield.setText(String.valueOf(num));
         }
         // Percentage Button
-        if(e.getSource() == percButton)
+        if(e.getSource() == percButton && !textfield.getText().isEmpty())
         {
             double num = Double.parseDouble(textfield.getText())/100;
             textfield.setText(String.valueOf(num));
         }
     }
     
+    public void setMessageWithDelay(String text, JLabel label){
+        label.setText(text);
+
+        int delay = 2000; // 2 seconds
+
+        ActionListener clear = new ActionListener() {
+         public void actionPerformed(ActionEvent evt) {
+              SwingUtilities.invokeLater(new Runnable() {
+               public void run() {
+                   label.setText("");
+                }
+            });
+          }
+        };
+
+        Timer timer = new Timer(delay, clear);
+        timer.setRepeats(false);
+        timer.start();
+    }
+    
+    public void setMessageWithDelay(String text, JTextField field){
+        field.setText(text);
+
+        int delay = 2000; // 2 seconds
+
+        ActionListener clear = new ActionListener() {
+         public void actionPerformed(ActionEvent evt) {
+              SwingUtilities.invokeLater(new Runnable() {
+               public void run() {
+                   field.setText("");
+                }
+            });
+          }
+        };
+
+        Timer timer = new Timer(delay, clear);
+        timer.setRepeats(false);
+        timer.start();
+    }
 }
