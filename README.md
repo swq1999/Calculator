@@ -19,3 +19,8 @@ A calculator I built using **Java** in Apache NetBeans IDE 15.
     * Decimal Button (.)
     * Negative Button ((-))
 
+## Screenshots
+
+<img src="Data/calc1.png" alt="Calculator1" width="280" height="380">
+<img src="Data/calc2.png" alt="Calculator2" width="280" height="380">
+<img src="Data/calc3.png" alt="Calculator3" width="280" height="380">
