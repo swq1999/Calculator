@@ -21,6 +21,6 @@ A calculator I built using **Java** in Apache NetBeans IDE 15.
 
 ## Screenshots
 
-<img src="Data/calc1.png" alt="Calculator1" width="280" height="380">
-<img src="Data/calc2.png" alt="Calculator2" width="280" height="380">
-<img src="Data/calc3.png" alt="Calculator3" width="280" height="380">
+<img src="Data/calc1.png" alt="Calculator1" width="460" height="600">
+<img src="Data/calc2.png" alt="Calculator2" width="460" height="600">
+<img src="Data/calc3.png" alt="Calculator3" width="460" height="600">
