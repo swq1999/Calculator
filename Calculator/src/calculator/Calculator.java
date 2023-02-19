@@ -7,7 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import javax.swing.*;
 
@@ -28,14 +32,25 @@ public class Calculator implements ActionListener {
     JButton addButton, subButton, mulButton, divButton, percButton;
     JButton delButton, equButton, clrButton, decButton, negButton;
     
-    Font myFont = new Font("", Font.PLAIN, 40);
     Font myFontBtns = new Font("", Font.PLAIN, 30);
+    Font digital;
     
     double num1 = 0, num2 = 0, result = 0;
     char op;
     
     // Constructor
     Calculator() {
+        
+        // Importing new Font
+        try {
+            digital = Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/digital-7.ttf")).deriveFont(60f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/digital-7.ttf")));
+        } 
+        catch(IOException | FontFormatException e) {
+            System.out.println("Error: "+ e);
+        }
+        
         // Setting frame values
         frame = new JFrame("Calculator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,7 +63,7 @@ public class Calculator implements ActionListener {
         textfield.setBounds(42,30, 350, 80);
         textfield.setBackground(Color.BLACK);
         textfield.setForeground(Color.GREEN);
-        textfield.setFont(myFont);
+        textfield.setFont(digital);
         textfield.setEditable(false);
         
         // Function buttons
@@ -84,7 +99,7 @@ public class Calculator implements ActionListener {
         for(int i=0; i<10; i++) {
             numButtons[i] = new JButton(Integer.toString(i));
             numButtons[i].addActionListener(this);
-            numButtons[i].setFont(myFontBtns);
+            numButtons[i].setFont(digital);
             numButtons[i].setFocusable(false);
         }
         
@@ -123,7 +138,7 @@ public class Calculator implements ActionListener {
         // Adding message
         message = new JLabel("");
         message.setForeground(Color.RED);
-        message.setBounds(50, 7, 400, 20);
+        message.setBounds(50, 8, 400, 20);
         frame.getContentPane().add(message);
         
         // Adding to frame
@@ -155,7 +170,7 @@ public class Calculator implements ActionListener {
             }
         }
         // Decimal button
-        if(e.getSource() == decButton)
+        if(e.getSource() == decButton && !textfield.getText().contains("."))
         {
             textfield.setText(textfield.getText().concat("."));
         }
@@ -172,6 +187,7 @@ public class Calculator implements ActionListener {
             num1 = Double.parseDouble(textfield.getText());
             op = '+';
             textfield.setText("");
+            //System.out.println(num1+"+");
         }
         // Subtract button
         if(e.getSource() == subButton && !textfield.getText().isEmpty())
@@ -197,9 +213,14 @@ public class Calculator implements ActionListener {
         // Equals button
         if(e.getSource() == equButton)
         {
-            if (textfield.getText().isEmpty() || textfield.getText().contains(".")){
-                
+            if (textfield.getText().isEmpty()){
+                setMessageWithDelay("Please enter a value",message);
+                return;
+            } else if (textfield.getText().isEmpty() && num2 == 0 && num1 == 0){
+                setMessageWithDelay("Please enter a value",message);
+                return;
             }
+            
             else {
                 num2 = Double.parseDouble(textfield.getText());
 
@@ -224,13 +245,14 @@ public class Calculator implements ActionListener {
                             result = Double.parseDouble(df.format(num1 / num2));
                             break;
                         }
-                    default:
-                        setMessageWithDelay("Please enter a second value",message);
-                        return;
+//                    default:
+//                        setMessageWithDelay("Please enter a second value",message);
+//                        return;
                 }
                 
                 textfield.setText(String.valueOf(result));
-                num1 = result;
+                num2 = result;
+                num1 = 0;
             }
         }      
         
@@ -244,22 +266,23 @@ public class Calculator implements ActionListener {
         // Negative Button
         if(e.getSource() == negButton && !textfield.getText().isEmpty())
         {
-            double num = Double.parseDouble(textfield.getText())*-1;
+            double num = Double.parseDouble(df.format(Double.parseDouble(textfield.getText())*-1));
             textfield.setText(String.valueOf(num));
         }
         // Percentage Button
         if(e.getSource() == percButton && !textfield.getText().isEmpty())
         {
-            double num = Double.parseDouble(textfield.getText())/100;
+            double num = Double.parseDouble(df.format(Double.parseDouble(textfield.getText())/100));
             textfield.setText(String.valueOf(num));
         }
     }
     
+    // To print in label
     public void setMessageWithDelay(String text, JLabel label){
+        
         label.setText(text);
-
         int delay = 2000; // 2 seconds
-
+        
         ActionListener clear = new ActionListener() {
          public void actionPerformed(ActionEvent evt) {
               SwingUtilities.invokeLater(new Runnable() {
@@ -275,11 +298,12 @@ public class Calculator implements ActionListener {
         timer.start();
     }
     
+    // To print in textfield
     public void setMessageWithDelay(String text, JTextField field){
+        
         field.setText(text);
-
         int delay = 2000; // 2 seconds
-
+        
         ActionListener clear = new ActionListener() {
          public void actionPerformed(ActionEvent evt) {
               SwingUtilities.invokeLater(new Runnable() {
