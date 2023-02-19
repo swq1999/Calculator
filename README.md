@@ -16,7 +16,6 @@ A calculator I built using **Java** in Apache NetBeans IDE 15.
     * Backspace Button (<<)
     * Decimal Button (.)
     * Equals Button (=)
-    * Decimal Button (.)
     * Negative Button ((-))
 
 ## Screenshots
