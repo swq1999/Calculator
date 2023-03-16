@@ -12,7 +12,7 @@ A calculator I built using **Java** in Apache NetBeans IDE 15.
     * Division (/)
     * Percentage (%)
 * Other Operations:
-    * Clear Button (Clr)
+    * Clear Button (AC)
     * Backspace Button (<<)
     * Decimal Button (.)
     * Equals Button (=)
